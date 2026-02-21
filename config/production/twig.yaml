@@ -1,0 +1,2 @@
+twig:
+    cache: '%project.directory%/var/cache/twig'

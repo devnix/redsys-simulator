@@ -1,0 +1,29 @@
+monolog:
+    channels:
+        app:
+            handlers:
+                - monolog.handler.file
+
+            processors:
+                - monolog.processor.psr-log-message
+                - monolog.processor.process-id
+
+        http:
+            handlers:
+                - monolog.handler.stderr
+
+            processors:
+                - monolog.processor.psr-log-message
+                - monolog.processor.process-id
+
+    handlers:
+        file:
+            type: file
+            file: "%project.directory%/var/log/%project.mode%.log"
+            level: debug
+            formatter: monolog.formatter.line
+
+        stderr:
+            type: stderr
+            level: debug
+            formatter: monolog.formatter.console
