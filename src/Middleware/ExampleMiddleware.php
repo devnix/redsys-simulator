@@ -18,6 +18,7 @@ final readonly class ExampleMiddleware implements MiddlewareInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function process(Context $context, RequestInterface $request, HandlerInterface $next): ResponseInterface
     {
         $response = $next->handle($context, $request);

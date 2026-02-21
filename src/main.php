@@ -65,20 +65,20 @@ require_once __DIR__ . '/../vendor/autoload.php';
     /* |----------------------------------------| */
     /* | Create a container builder.            | */
     /* |----------------------------------------| */
-    $builder = ContainerBuilder::create($project);
+    $containerBuilder = ContainerBuilder::create($project);
 
     /* |----------------------------------------| */
     /* | Add configuration resources to the     | */
     /* | container builder.                     | */
     /* |----------------------------------------| */
-    $builder->addConfigurationResource(__DIR__ . '/../config');
-    $builder->addConfigurationResource(__DIR__ . '/../config/' . $project->mode->value . '/');
+    $containerBuilder->addConfigurationResource(__DIR__ . '/../config');
+    $containerBuilder->addConfigurationResource(__DIR__ . '/../config/' . $project->mode->value . '/');
 
     /* |----------------------------------------| */
     /* | Add extensions to the container        | */
     /* | builder.                               | */
     /* |----------------------------------------| */
-    $builder->addExtensions([
+    $containerBuilder->addExtensions([
         new Neu\Bridge\Monolog\DependencyInjection\MonologExtension(),
         new Neu\Framework\DependencyInjection\FrameworkExtension(),
         new Neu\Bridge\Twig\DependencyInjection\TwigExtension(),
@@ -88,17 +88,18 @@ require_once __DIR__ . '/../vendor/autoload.php';
     /* | Add paths to the container builder for | */
     /* | auto-discovery.                        | */
     /* |----------------------------------------| */
-    $builder->addPathForAutoDiscovery(__DIR__);
+    $containerBuilder->addPathForAutoDiscovery(__DIR__);
 
     /* |----------------------------------------| */
     /* | Build the container.                   | */
     /* |----------------------------------------| */
-    $container = $builder->build();
+    $container = $containerBuilder->build();
 
     /* |----------------------------------------| */
     /* | Retrieve the engine from the           | */
     /* | container.                             | */
     /* |----------------------------------------| */
+    \PHPStan\dumpType($container);
     $engine = $container->getTyped(EngineInterface::class, EngineInterface::class);
 
     /* |----------------------------------------| */

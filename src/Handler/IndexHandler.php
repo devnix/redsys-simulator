@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Handler;
 
 use Neu\Component\DependencyInjection\Project;
+use Neu\Component\Http\Exception\LogicException;
 use Neu\Component\Http\Message\Method;
 use Neu\Component\Http\Message\RequestInterface;
-use Neu\Component\Http\Message\ResponseInterface;
 use Neu\Component\Http\Message\Response;
+use Neu\Component\Http\Message\ResponseInterface;
 use Neu\Component\Http\Router\Route;
 use Neu\Component\Http\Runtime\Context;
 use Neu\Component\Http\Runtime\Handler\HandlerInterface;
@@ -29,7 +30,7 @@ final class IndexHandler implements HandlerInterface
     /**
      * The twig environment used to render templates.
      */
-    private Environment $twig;
+    private Environment $twigEnvironment;
 
     /**
      * The server counter.
@@ -40,29 +41,29 @@ final class IndexHandler implements HandlerInterface
      * Create a new instance of the handler.
      *
      * @param Project $project The project instance.
-     * @param Environment $twig The twig environment used to render templates.
+     * @param Environment $twigEnvironment The twig environment used to render templates.
      */
-    public function __construct(Project $project, Environment $twig)
+    public function __construct(Project $project, Environment $twigEnvironment)
     {
         $this->project = $project;
-        $this->twig = $twig;
+        $this->twigEnvironment = $twigEnvironment;
     }
 
     /**
      * Handle the incoming request.
      *
      * @throws TwigError If an error occurs while rendering the template.
+     * @throws LogicException
      */
+    #[\Override]
     public function handle(Context $context, RequestInterface $request): ResponseInterface
     {
         $serverCounter = ++$this->serverCounter;
 
         $session = $request->getSession();
-        $counter = $session->update('counter', static function(?int $count): int {
-            return (null !== $count) ? ($count + 1) : 1;
-        });
+        $counter = $session->update('counter', static fn(?int $count): int => null !== $count ? $count + 1 : 1);
 
-        $content = $this->twig->render('index.html.twig', [
+        $content = $this->twigEnvironment->render('index.html.twig', [
             'project' => $this->project,
             'context' => $context,
             'serverCounter' => $serverCounter,
